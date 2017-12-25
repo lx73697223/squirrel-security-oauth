@@ -13,11 +13,44 @@
     <artifactId>squirrel-authorization-service</artifactId>
 
     <dependencies>
+        <!-- squirrel begin -->
         <dependency>
             <groupId>com.pipi</groupId>
             <artifactId>squirrel-oauth-core</artifactId>
         </dependency>
+        <!-- 用户账号服务接口 -->
+        <dependency>
+            <groupId>com.pipi</groupId>
+            <artifactId>squirrel-user-account-endpoint-intf</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.pipi</groupId>
+            <artifactId>squirrel-cloud-starter-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.pipi</groupId>
+            <artifactId>squirrel-common-jackson</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.pipi</groupId>
+            <artifactId>squirrel-common-persistence</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.pipi</groupId>
+            <artifactId>squirrel-common-autoconfigure</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.pipi</groupId>
+            <artifactId>squirrel-common-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- squirrel end -->
 
+        <!-- 服务调用客户端 -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-feign</artifactId>
+        </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
@@ -26,25 +59,6 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <scope>provided</scope>
-        </dependency>
-        <!-- 服务调用客户端 -->
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-feign</artifactId>
-        </dependency>
-
-        <!-- 用户账号服务接口 -->
-        <dependency>
-            <groupId>com.pipi</groupId>
-            <artifactId>squirrel-user-account-endpoint-intf</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.pipi</groupId>
-            <artifactId>squirrel-common-utils</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.pipi</groupId>
-            <artifactId>squirrel-cloud-starter-client</artifactId>
         </dependency>
     </dependencies>
 
