@@ -77,7 +77,8 @@ public class AuthorizationServerConfigurer extends AuthorizationServerConfigurer
         registerJwtBearerAssertionFilter(configurer, JwtRefreshGrantsAssertionAuthenticationManager::new,
                 JwtRefreshGrantsAssertionFilter::new);
 
-        configurer.checkTokenAccess("isAuthenticated()");
+        configurer.checkTokenAccess("isAuthenticated() || hasAuthority('ROLETRUSTEDCLIENT')")
+                  .tokenKeyAccess("isAnonymous() || hasAuthority('ROLETRUSTEDCLIENT')");
 
         // enable client to get the authenticated when using the /oauth/token to get a access token
         // there is a 401 authentication is required if it doesn't allow form authentication for clients when access /oauth/token
