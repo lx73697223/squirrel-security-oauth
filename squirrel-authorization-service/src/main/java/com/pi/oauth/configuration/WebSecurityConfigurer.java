@@ -9,7 +9,7 @@ public class WebSecurityConfigurer extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity configurer) throws Exception {
-        configurer.authorizeRequests().antMatchers("/login", "/oauth/*").permitAll();
+        configurer.authorizeRequests().antMatchers("/login", "/oauth/token").permitAll();
     }
 
 }
