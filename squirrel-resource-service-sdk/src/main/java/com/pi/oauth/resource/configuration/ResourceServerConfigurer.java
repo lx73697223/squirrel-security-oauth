@@ -1,12 +1,12 @@
 package com.pi.oauth.resource.configuration;
 
-import java.io.InputStream;
-import java.security.cert.Certificate;
-import java.security.cert.CertificateFactory;
-import java.security.interfaces.RSAPublicKey;
-import java.util.ArrayList;
-import java.util.List;
-
+import com.pi.common.utils.core.IteratorUtils;
+import com.pi.oauth.resource.authentication.AccessTokenAuthenticationProvider;
+import com.pi.oauth.resource.authentication.IdTokenAuthenticationProvider;
+import com.pi.oauth.resource.authentication.UserPermissionProvider;
+import com.pi.oauth.resource.token.CustomJwtAccessTokenConverter;
+import com.pi.oauth.resource.token.IdTokenConverter;
+import com.pi.oauth.resource.token.JwtBearTokenExtractor;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -20,6 +20,7 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
@@ -29,13 +30,12 @@ import org.springframework.security.oauth2.provider.token.ResourceServerTokenSer
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 
-import com.pi.common.utils.core.IteratorUtils;
-import com.pi.oauth.resource.authentication.AccessTokenAuthenticationProvider;
-import com.pi.oauth.resource.authentication.IdTokenAuthenticationProvider;
-import com.pi.oauth.resource.authentication.UserPermissionProvider;
-import com.pi.oauth.resource.token.CustomJwtAccessTokenConverter;
-import com.pi.oauth.resource.token.IdTokenConverter;
-import com.pi.oauth.resource.token.JwtBearTokenExtractor;
+import java.io.InputStream;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateFactory;
+import java.security.interfaces.RSAPublicKey;
+import java.util.ArrayList;
+import java.util.List;
 
 @EnableResourceServer
 @Configuration
@@ -43,7 +43,8 @@ import com.pi.oauth.resource.token.JwtBearTokenExtractor;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @ConditionalOnProperty(prefix = OAuthResourceProperties.PREFIX, name = "cert-location")
 @EnableConfigurationProperties(OAuthResourceProperties.class)
-public class ResourceServerConfigurer extends ResourceServerConfigurerAdapter implements ResourceLoaderAware, InitializingBean {
+public class ResourceServerConfigurer extends ResourceServerConfigurerAdapter
+        implements ResourceLoaderAware, InitializingBean {
 
     private static final String RESOURCE_ID = "oauth2-resource";
 
@@ -90,8 +91,8 @@ public class ResourceServerConfigurer extends ResourceServerConfigurerAdapter im
             authenticationProviders.add(idTokenAuthenticationProvider());
         }
         ProviderManager providerManager = new ProviderManager(authenticationProviders);
-        configurer.resourceId(RESOURCE_ID).tokenStore(tokenStore).tokenExtractor(new JwtBearTokenExtractor())
-                .authenticationManager(providerManager);
+        configurer.resourceId(RESOURCE_ID).stateless(true).tokenStore(tokenStore).tokenExtractor(
+                new JwtBearTokenExtractor()).authenticationManager(providerManager);
     }
 
     @Override
@@ -107,7 +108,8 @@ public class ResourceServerConfigurer extends ResourceServerConfigurerAdapter im
 
     private AccessTokenAuthenticationProvider accessTokenAuthenticationProvider(TokenStore tokenStore) {
         AccessTokenAuthenticationProvider accessTokenAuthenticationProvider = new AccessTokenAuthenticationProvider();
-        accessTokenAuthenticationProvider.setAuthenticationManager(oauthAuthenticationManager(tokenStore));
+        accessTokenAuthenticationProvider.setAuthenticationManager(
+                oauthAuthenticationManager(tokenStore));
         return accessTokenAuthenticationProvider;
     }
 

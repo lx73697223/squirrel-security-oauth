@@ -155,6 +155,9 @@ public class AuthorizationServerConfigurer extends AuthorizationServerConfigurer
         filter.setAuthenticationManager(authenticationManager);
 
         configurer.addTokenEndpointAuthenticationFilter(filter);
+
+        //允许表单认证
+        configurer.allowFormAuthenticationForClients();
     }
 
     /**
