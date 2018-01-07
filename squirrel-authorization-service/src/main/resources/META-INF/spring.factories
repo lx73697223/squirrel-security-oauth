@@ -1,4 +1,4 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-com.pi.oauth.configuration.AuthorizationServerConfigurer,\
-com.pi.oauth.configuration.KeyStoreKeyFactoryConfiguration,\
-com.pi.oauth.configuration.WebSecurityConfigurer
+com.pi.oauth.config.AuthorizationServerConfigurer,\
+com.pi.oauth.config.KeyStoreKeyFactoryConfiguration,\
+com.pi.oauth.config.WebSecurityConfigurer

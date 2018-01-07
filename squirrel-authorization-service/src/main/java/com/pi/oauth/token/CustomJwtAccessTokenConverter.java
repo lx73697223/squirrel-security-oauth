@@ -8,7 +8,7 @@ import com.nimbusds.jose.crypto.RSASSASigner;
 import com.nimbusds.jose.crypto.RSASSAVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
-import com.pi.oauth.configuration.OAuthServerProperties;
+import com.pi.oauth.config.OAuthServerProperties;
 import com.pi.oauth.dto.UserDetailsDto;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;

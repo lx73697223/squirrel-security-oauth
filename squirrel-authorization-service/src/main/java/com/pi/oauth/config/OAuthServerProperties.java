@@ -1,4 +1,4 @@
-package com.pi.oauth.configuration;
+package com.pi.oauth.config;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

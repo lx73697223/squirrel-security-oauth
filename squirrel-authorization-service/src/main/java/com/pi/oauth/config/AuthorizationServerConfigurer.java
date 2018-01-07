@@ -1,11 +1,18 @@
-package com.pi.oauth.configuration;
+package com.pi.oauth.config;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
-import java.util.Collections;
-import java.util.List;
-import java.util.function.Supplier;
-
+import com.google.common.collect.Lists;
+import com.pi.oauth.authentication.JwtAuthorizationGrantsAssertionAuthenticationManager;
+import com.pi.oauth.authentication.JwtBearerAssertionAuthenticationManager;
+import com.pi.oauth.authentication.JwtClientAuthenticationAssertionAuthenticationManager;
+import com.pi.oauth.authentication.JwtRefreshGrantsAssertionAuthenticationManager;
+import com.pi.oauth.constants.AuthServerConstants;
+import com.pi.oauth.filter.JwtAuthorizationGrantsAssertionFilter;
+import com.pi.oauth.filter.JwtBearerAssertionFilter;
+import com.pi.oauth.filter.JwtClientAuthenticationAssertionFilter;
+import com.pi.oauth.filter.JwtRefreshGrantsAssertionFilter;
+import com.pi.oauth.token.CustomJwtAccessTokenConverter;
+import com.pi.oauth.token.IdTokenEnhancer;
+import com.pi.oauth.token.JwtAuthorizationGrantsAssertionTokenGranter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -29,18 +36,11 @@ import org.springframework.security.oauth2.provider.token.TokenEnhancerChain;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.KeyStoreKeyFactory;
 
-import com.google.common.collect.Lists;
-import com.pi.oauth.authentication.JwtAuthorizationGrantsAssertionAuthenticationManager;
-import com.pi.oauth.authentication.JwtBearerAssertionAuthenticationManager;
-import com.pi.oauth.authentication.JwtClientAuthenticationAssertionAuthenticationManager;
-import com.pi.oauth.authentication.JwtRefreshGrantsAssertionAuthenticationManager;
-import com.pi.oauth.filter.JwtAuthorizationGrantsAssertionFilter;
-import com.pi.oauth.filter.JwtBearerAssertionFilter;
-import com.pi.oauth.filter.JwtClientAuthenticationAssertionFilter;
-import com.pi.oauth.filter.JwtRefreshGrantsAssertionFilter;
-import com.pi.oauth.token.CustomJwtAccessTokenConverter;
-import com.pi.oauth.token.IdTokenEnhancer;
-import com.pi.oauth.token.JwtAuthorizationGrantsAssertionTokenGranter;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.util.Collections;
+import java.util.List;
+import java.util.function.Supplier;
 
 @EnableAuthorizationServer
 @Configuration
@@ -60,22 +60,25 @@ public class AuthorizationServerConfigurer extends AuthorizationServerConfigurer
     private OAuthServerProperties oauthServerProperties;
 
     /**
-     * 配置(TokenEndpoint)的安全约束
+     配置(TokenEndpoint)的安全约束
      */
     @Override
     public void configure(AuthorizationServerSecurityConfigurer configurer) throws Exception {
 
         // registerJwtClientAuthenticationAssertionFilter
-        registerJwtBearerAssertionFilter(configurer, JwtClientAuthenticationAssertionAuthenticationManager::new,
-                JwtClientAuthenticationAssertionFilter::new);
+        registerJwtBearerAssertionFilter(configurer,
+                                         JwtClientAuthenticationAssertionAuthenticationManager::new,
+                                         JwtClientAuthenticationAssertionFilter::new);
 
         // registerJwtAuthorizationGrantsAssertionFilter
-        registerJwtBearerAssertionFilter(configurer, JwtAuthorizationGrantsAssertionAuthenticationManager::new,
-                JwtAuthorizationGrantsAssertionFilter::new);
+        registerJwtBearerAssertionFilter(configurer,
+                                         JwtAuthorizationGrantsAssertionAuthenticationManager::new,
+                                         JwtAuthorizationGrantsAssertionFilter::new);
 
         // registerJwtRefreshGrantsAssertionFilter
-        registerJwtBearerAssertionFilter(configurer, JwtRefreshGrantsAssertionAuthenticationManager::new,
-                JwtRefreshGrantsAssertionFilter::new);
+        registerJwtBearerAssertionFilter(configurer,
+                                         JwtRefreshGrantsAssertionAuthenticationManager::new,
+                                         JwtRefreshGrantsAssertionFilter::new);
 
         configurer.checkTokenAccess("isAuthenticated() || hasAuthority('ROLETRUSTEDCLIENT')")
                   .tokenKeyAccess("isAnonymous() || hasAuthority('ROLETRUSTEDCLIENT')");
@@ -86,8 +89,7 @@ public class AuthorizationServerConfigurer extends AuthorizationServerConfigurer
     }
 
     /**
-     * 配置客户端详情服务（ClientDetailsService），客户端详情信息在这里进行初始化，
-     * 把客户端详情信息写死在这里或者是通过数据库来存储调取详情信息
+     配置客户端详情服务（ClientDetailsService），客户端详情信息在这里进行初始化， 把客户端详情信息写死在这里或者是通过数据库来存储调取详情信息
      */
     @Override
     public void configure(ClientDetailsServiceConfigurer configurer) throws Exception {
@@ -95,17 +97,29 @@ public class AuthorizationServerConfigurer extends AuthorizationServerConfigurer
     }
 
     /**
-     * 配置授权（authorization）以及令牌（token）的访问端点和令牌服务(token services)
+     配置授权（authorization）以及令牌（token）的访问端点和令牌服务(token services)
      */
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer configurer) throws Exception {
-
         TokenEnhancerChain tokenEnhancer = new TokenEnhancerChain();
-        tokenEnhancer.setTokenEnhancers(Lists.newArrayList(jwtAccessTokenConverter(), idTokenEnhancer()));
+        tokenEnhancer.setTokenEnhancers(
+                Lists.newArrayList(jwtAccessTokenConverter(), idTokenEnhancer()));
 
-        configurer.authenticationManager(authenticationManager()).accessTokenConverter(jwtAccessTokenConverter())
-                .approvalStoreDisabled().tokenEnhancer(tokenEnhancer).reuseRefreshTokens(false)
-                .userDetailsService(userDetailsService).requestValidator(new DefaultOAuth2RequestValidator());
+        // @formatter:off
+        configurer.pathMapping("/oauth/authorize", AuthServerConstants.AUTH_API_URL + "/oauth/authorize")
+                  .pathMapping("/oauth/token", AuthServerConstants.AUTH_API_URL + "/oauth/token")
+                  .pathMapping("/oauth/check_token", AuthServerConstants.AUTH_API_URL + "/oauth/check_token")
+                  .pathMapping("/oauth/error", AuthServerConstants.AUTH_API_URL + "/oauth/error")
+                  .pathMapping("/oauth/token_key", AuthServerConstants.AUTH_API_URL + "/oauth/token_key")
+                  .pathMapping("/oauth/confirm_access", AuthServerConstants.AUTH_API_URL + "/oauth/confirm_access")
+                  .authenticationManager(authenticationManager())
+                  .accessTokenConverter(jwtAccessTokenConverter())
+                  .approvalStoreDisabled()
+                  .tokenEnhancer(tokenEnhancer)
+                  .reuseRefreshTokens(false)
+                  .userDetailsService(userDetailsService)
+                  .requestValidator(new DefaultOAuth2RequestValidator());
+        // @formatter:on
 
         configureTokenGrant(configurer);
     }
@@ -119,9 +133,11 @@ public class AuthorizationServerConfigurer extends AuthorizationServerConfigurer
     }
 
     private void configureTokenGrant(AuthorizationServerEndpointsConfigurer configurer) {
-
-        JwtAuthorizationGrantsAssertionTokenGranter jwtAuthorizationGrantsAssertionTokenGranter = new JwtAuthorizationGrantsAssertionTokenGranter(
-                configurer.getTokenServices(), configurer.getClientDetailsService(), configurer.getOAuth2RequestFactory());
+        // @formatter:off
+        JwtAuthorizationGrantsAssertionTokenGranter jwtAuthorizationGrantsAssertionTokenGranter =
+                new JwtAuthorizationGrantsAssertionTokenGranter(configurer.getTokenServices(),
+                        configurer.getClientDetailsService(), configurer.getOAuth2RequestFactory());
+        // @formatter:on
         jwtAuthorizationGrantsAssertionTokenGranter.setUserDetailsService(userDetailsService);
 
         TokenGranter defaultTokenGranter = configurer.getTokenGranter();
@@ -133,8 +149,8 @@ public class AuthorizationServerConfigurer extends AuthorizationServerConfigurer
             @Override
             public OAuth2AccessToken grant(String grantType, TokenRequest tokenRequest) {
                 if (delegate == null) {
-                    List<TokenGranter> tokenGranters = Lists.newArrayList(jwtAuthorizationGrantsAssertionTokenGranter,
-                            defaultTokenGranter);
+                    List<TokenGranter> tokenGranters = Lists.newArrayList(
+                            jwtAuthorizationGrantsAssertionTokenGranter, defaultTokenGranter);
                     delegate = new CompositeTokenGranter(tokenGranters);
                 }
                 return delegate.grant(grantType, tokenRequest);
@@ -161,20 +177,22 @@ public class AuthorizationServerConfigurer extends AuthorizationServerConfigurer
     }
 
     /**
-     * 认证管理器，密码（password）授权类型时需要
+     认证管理器，密码（password）授权类型时需要
      */
     @Bean
     public AuthenticationManager authenticationManager() {
         DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
         daoAuthenticationProvider.setUserDetailsService(userDetailsService);
 
-        ProviderManager providerManager = new ProviderManager(Collections.singletonList(daoAuthenticationProvider));
+        ProviderManager providerManager = new ProviderManager(Collections.singletonList(
+                daoAuthenticationProvider));
         providerManager.setEraseCredentialsAfterAuthentication(true);
         return providerManager;
     }
 
     @Bean
-    public JwtAccessTokenConverter jwtAccessTokenConverter() throws IOException, GeneralSecurityException {
+    public JwtAccessTokenConverter jwtAccessTokenConverter()
+            throws IOException, GeneralSecurityException {
 
         CustomJwtAccessTokenConverter tokenConverter = new CustomJwtAccessTokenConverter();
         tokenConverter.setClientDetailsService(clientDetailsService);
