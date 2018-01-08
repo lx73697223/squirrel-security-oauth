@@ -1,4 +1,4 @@
-package com.pi.oauth.dto;
+package com.pi.oauth.resource.dto;
 
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;

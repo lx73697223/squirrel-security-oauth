@@ -1,8 +1,8 @@
 package com.pi.oauth.resource.token;
 
 import com.nimbusds.jwt.JWTClaimsSet;
-import com.pi.oauth.dto.MutableUserDetails;
-import com.pi.oauth.dto.UserDetailsDto;
+import com.pi.oauth.resource.dto.MutableUserDetails;
+import com.pi.oauth.resource.dto.UserDetailsDto;
 import org.springframework.stereotype.Component;
 
 import java.text.ParseException;

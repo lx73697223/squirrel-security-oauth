@@ -3,7 +3,7 @@ package com.pi.oauth.resource.authentication;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.crypto.RSASSAVerifier;
 import com.nimbusds.jwt.SignedJWT;
-import com.pi.oauth.dto.MutableUserDetails;
+import com.pi.oauth.resource.dto.MutableUserDetails;
 import com.pi.oauth.resource.token.IdTokenConverter;
 import com.pi.oauth.resource.token.JwtTokenAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationProvider;

@@ -18,7 +18,6 @@
     <modules>
         <module>squirrel-authorization-service</module>
         <module>squirrel-resource-service-sdk</module>
-        <module>squirrel-oauth-core</module>
     </modules>
 
 </project>

@@ -1,4 +1,4 @@
-package com.pi.oauth.dto;
+package com.pi.oauth.resource.dto;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

@@ -1,7 +1,7 @@
 package com.pi.oauth.resource.token;
 
 import com.nimbusds.jwt.JWTClaimsSet;
-import com.pi.oauth.dto.MutableUserDetails;
+import com.pi.oauth.resource.dto.MutableUserDetails;
 
 import java.text.ParseException;
 

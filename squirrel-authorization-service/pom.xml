@@ -17,7 +17,7 @@
         <!-- squirrel begin -->
         <dependency>
             <groupId>com.pipi</groupId>
-            <artifactId>squirrel-oauth-core</artifactId>
+            <artifactId>squirrel-resource-service-sdk</artifactId>
         </dependency>
         <!-- 用户账号服务接口 -->
         <dependency>
@@ -55,6 +55,7 @@
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
